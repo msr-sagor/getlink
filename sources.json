@@ -1,0 +1,20 @@
+[
+  {
+    "fetch_url": "https://livecricketsl.cc.nf/livecricket/sports.php?id=shd",
+    "fallback_name": "Sports 1",
+    "group": "Sports",
+    "logo": "https://example.com/logo1.png"
+  },
+  {
+    "fetch_url": "https://sagor.xyz?id=sha2",
+    "fallback_name": "Sports 2",
+    "group": "Sports",
+    "logo": "https://example.com/logo2.png"
+  },
+  {
+    "fetch_url": "https://sagor.xyz?id=sha3",
+    "fallback_name": "Sports 3",
+    "group": "Sports",
+    "logo": "https://example.com/logo3.png"
+  }
+]
