@@ -1,6 +1,6 @@
 [
   {
-    "fetch_url": "https://livecricketsl.cc.nf/livecricket/sports.php?id=shd",
+    "fetch_url": "https://cric-flixs.netlify.app/c/prime",
     "fallback_name": "Sports 1",
     "group": "Sports",
     "logo": "https://example.com/logo1.png"
