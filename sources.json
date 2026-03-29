@@ -6,15 +6,9 @@
     "logo": "https://example.com/logo1.png"
   },
   {
-    "fetch_url": "https://livecricketsl.cc.nf/livecricket/sports.php?id=willow2",
+    "fetch_url": "https://your-authorized-source.com/api/channel2",
     "fallback_name": "Sports 2",
     "group": "Sports",
     "logo": "https://example.com/logo2.png"
-  },
-  {
-    "fetch_url": "https://sagor.xyz?id=sha3",
-    "fallback_name": "Sports 3",
-    "group": "Sports",
-    "logo": "https://example.com/logo3.png"
   }
 ]
