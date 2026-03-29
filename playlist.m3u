@@ -1,1 +1,173 @@
 #EXTM3U
+#EXTINF:-1 tvg-name="Sports 1" tvg-logo="https://example.com/logo1.png" group-title="Sports",Sports 1
+<!DOCTYPE html>  
+<html>  
+<head>  
+  <meta charset="UTF-8">  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+  <title>Prime Video ONE</title>     
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.ui.min.js" crossorigin="anonymous"></script>  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/controls.min.css" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+  <style>  
+    * { margin: 0; padding: 0; box-sizing: border-box; }  
+    html, body {  
+      background: #000;  
+      height: 100vh;  
+      width: 100vw;  
+      overflow: hidden;  
+      font-family: sans-serif;  
+    }  
+    .shaka-video-container {  
+      position: absolute;  
+      inset: 0;  
+      width: 100%;  
+      height: 100%;  
+    }  
+    video {  
+      width: 100%;  
+      height: 100%;  
+      background: #000;  
+      object-fit: contain; 
+    }  
+    .shaka-spinner-container { display: none !important; }
+
+    /* Ratio Menu */
+    .ratio-menu {
+      position: absolute;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.9);
+      padding: 10px;
+      border-radius: 8px;
+      display: none; 
+      flex-direction: column;
+      gap: 8px;
+      z-index: 1000;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .ratio-menu.active { display: flex; }
+    .ratio-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .ratio-btn.selected { background: #e74c3c; }
+    
+    .custom-icon-btn {
+      background: none;
+      border: none;
+      padding: 0 5px;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+  </style>  
+</head>  
+
+<body>  
+  <div class="shaka-video-container" id="video-container">  
+    <video autoplay playsinline muted id="video" poster="https://i.ibb.co.com/XxX8t7Kr/CRIC-FLIXS-LOGO.png"></video>  
+
+    <div class="ratio-menu" id="ratioMenu">
+        <button class="ratio-btn selected" onclick="changeRatio('contain', this)">Original</button>
+        <button class="ratio-btn" onclick="changeRatio('fill', this)">Stretch</button>
+             <button class="ratio-btn" onclick="changeRatio('cover', this)">Fill (Zoom)</button>
+    </div>
+  </div>  
+  
+  <script>  
+    const video = document.getElementById('video');
+    const ratioMenu = document.getElementById('ratioMenu');
+
+    function changeRatio(mode, btn) {
+        document.querySelectorAll('.ratio-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        if (mode === 'contain' || mode === 'cover' || mode === 'fill') {
+            video.style.objectFit = mode;
+            video.style.aspectRatio = 'auto';
+        } else {
+            video.style.objectFit = 'fill';
+            video.style.aspectRatio = mode;
+        }
+        ratioMenu.classList.remove('active'); 
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {  
+      shaka.polyfill.installAll();  
+      if (!shaka.Player.isBrowserSupported()) return;  
+  
+      const container = document.getElementById('video-container');
+      const player = new shaka.Player(video);  
+      const ui = new shaka.ui.Overlay(player, container, video);  
+      const controls = ui.getControls();
+
+      ui.configure({  
+        controlPanelElements: [  
+          'play_pause', 'mute', 'volume', 'spacer', 'language', 'quality', 'fullscreen'  
+        ],
+        volumeBarColors: { base: 'rgba(255, 255, 255, 0.3)', level: 'rgb(255, 255, 255)' },  
+        seekBarColors: {  
+          base: 'rgba(255, 255, 255, 0.3)',
+          buffered: 'rgba(255, 255, 255, 0.5)',
+          played: 'rgb(255, 0, 0)'
+        }
+      });  
+
+      container.addEventListener('click', () => {
+          if (ratioMenu.classList.contains('active')) ratioMenu.classList.remove('active');
+          else controls.showControls();
+      });
+
+      // Find Fullscreen button to insert custom buttons BEFORE it
+      const fullscreenBtn = document.querySelector('.shaka-fullscreen-button');
+
+      // 1. Manual PiP Button
+      const pipIcon = document.createElement('button');
+      pipIcon.innerHTML = '<i class="material-icons-round" style="font-size:24px;">picture_in_picture</i>';
+      pipIcon.classList.add('custom-icon-btn');
+      pipIcon.title = "PiP";
+      fullscreenBtn.parentNode.insertBefore(pipIcon, fullscreenBtn);
+
+      pipIcon.onclick = async (e) => {
+        e.stopPropagation();
+        try {
+          if (video !== document.pictureInPictureElement) await video.requestPictureInPicture();
+          else await document.exitPictureInPicture();
+        } catch (err) { console.error(err); }
+      };
+
+      // 2. Ratio Button
+      const ratioIcon = document.createElement('button');
+      ratioIcon.innerHTML = '<i class="material-icons-round" style="font-size:24px;">aspect_ratio</i>';
+      ratioIcon.classList.add('custom-icon-btn');
+      ratioIcon.title = "Ratio";
+      fullscreenBtn.parentNode.insertBefore(ratioIcon, fullscreenBtn);
+
+      ratioIcon.onclick = (e) => {
+          e.stopPropagation(); 
+          ratioMenu.classList.toggle('active');
+      };
+  
+      player.configure({ 
+        drm: { clearKeys: { "": "" } } 
+      });  
+  
+      const streamUrl = "https://psl.bigbaat.app/out/v1/f342445c31dd475bbf30c7304dbad14f/index.m3u8";  
+  
+      try {  
+        await player.load(streamUrl);
+      } catch (error) {  
+        console.error('Load error:', error);  
+      }  
+    });  
+  </script>
+</body>  
+</html>
